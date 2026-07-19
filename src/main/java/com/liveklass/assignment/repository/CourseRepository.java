@@ -3,6 +3,7 @@ package com.liveklass.assignment.repository;
 import com.liveklass.assignment.entity.Course;
 import com.liveklass.assignment.entity.CourseStatus;
 import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +21,11 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
         WHERE c.id = :id
         """)
     Optional<Course> findByIdWithLock(Long id);
+
+    List<Course> findAllByOrderByCreatedAtDesc();
+
+    List<Course> findAllByStatusOrderByCreatedAtDesc(CourseStatus status);
+
+    @EntityGraph(attributePaths = "creator")
+    Optional<Course> findById(Long id);
 }
