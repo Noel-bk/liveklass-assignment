@@ -6,19 +6,24 @@ import com.liveklass.assignment.entity.EnrollmentStatus;
 import java.time.LocalDateTime;
 
 public record EnrollmentResponse(
-    Long id,
+    Long enrollmentId,
     Long courseId,
-    Long classmateId,
+    String courseTitle,
+    String courseDescription,
     EnrollmentStatus status,
+    LocalDateTime enrolledAt,
     LocalDateTime confirmedAt,
     LocalDateTime cancelledAt
 ) {
+
     public static EnrollmentResponse from(Enrollment enrollment) {
         return new EnrollmentResponse(
             enrollment.getId(),
             enrollment.getCourse().getId(),
-            enrollment.getClassmate().getId(),
+            enrollment.getCourse().getTitle(),
+            enrollment.getCourse().getDescription(),
             enrollment.getStatus(),
+            enrollment.getCreatedAt(),
             enrollment.getConfirmedAt(),
             enrollment.getCancelledAt()
         );

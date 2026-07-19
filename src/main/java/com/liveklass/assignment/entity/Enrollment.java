@@ -1,5 +1,6 @@
 package com.liveklass.assignment.entity;
 
+import com.liveklass.assignment.common.exception.InvalidEnrollmentStatusException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -60,7 +61,7 @@ public class Enrollment {
 
     public void confirm() {
         if (status != EnrollmentStatus.PENDING) {
-            throw new IllegalStateException("Only pending enrollment can be confirmed.");
+            throw new InvalidEnrollmentStatusException(id, status);
         }
 
         status = EnrollmentStatus.CONFIRMED;
@@ -68,8 +69,8 @@ public class Enrollment {
     }
 
     public void cancel() {
-        if (status == EnrollmentStatus.CANCELLED) {
-            throw new IllegalStateException("Enrollment is already cancelled.");
+        if (status != EnrollmentStatus.CONFIRMED) {
+            throw new InvalidEnrollmentStatusException(id, status);
         }
 
         status = EnrollmentStatus.CANCELLED;

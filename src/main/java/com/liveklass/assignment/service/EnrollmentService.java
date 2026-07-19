@@ -14,14 +14,16 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class EnrollmentService {
     private final CourseRepository courseRepository;
     private final EnrollmentRepository enrollmentRepository;
     private final ClassmateRepository classmateRepository;
 
+    @Transactional
     public EnrollmentResponse enroll(Long courseId, CreateEnrollmentRequest request) {
         Course course = getCourse(courseId);
         Classmate classmate = getClassmate(request.classmateId());
@@ -36,6 +38,32 @@ public class EnrollmentService {
         enrollmentRepository.save(enrollment);
 
         return EnrollmentResponse.from(enrollment);
+    }
+
+    @Transactional
+    public void confirm(Long enrollmentId) {
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+            .orElseThrow(() -> new EnrollmentNotFoundException(enrollmentId));
+
+        enrollment.confirm();
+    }
+
+    @Transactional
+    public void cancel(Long enrollmentId) {
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
+            .orElseThrow(() -> new EnrollmentNotFoundException(enrollmentId));
+
+        enrollment.cancel();
+
+        enrollment.getCourse().decreaseEnrollment();
+    }
+
+    @Transactional(readOnly = true)
+    public List<EnrollmentResponse> findMyEnrollments(Long classmateId) {
+        return enrollmentRepository.findAllByClassmateIdOrderByCreatedAtDesc(classmateId)
+            .stream()
+            .map(EnrollmentResponse::from)
+            .toList();
     }
 
     private Course getCourse(Long courseId) {
