@@ -30,4 +30,10 @@ public class Classmate {
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    public static Classmate create(String name) {
+        Classmate classmate = new Classmate();
+        classmate.name = name;
+        return classmate;
+    }
 }

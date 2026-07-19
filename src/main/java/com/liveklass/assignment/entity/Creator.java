@@ -30,4 +30,10 @@ public class Creator {
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    public static Creator create(String name) {
+        Creator creator = new Creator();
+        creator.name = name;
+        return creator;
+    }
 }

@@ -75,4 +75,14 @@ public class Enrollment {
         status = EnrollmentStatus.CANCELLED;
         cancelledAt = LocalDateTime.now();
     }
+
+    public static Enrollment create(Course course, Classmate classmate) {
+        Enrollment enrollment = new Enrollment();
+
+        enrollment.course = course;
+        enrollment.classmate = classmate;
+        enrollment.status = EnrollmentStatus.PENDING;
+
+        return enrollment;
+    }
 }

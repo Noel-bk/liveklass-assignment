@@ -74,15 +74,51 @@ public class Course {
     }
 
     public void increaseEnrollment() {
-        if (isFull()) {
-            throw new IllegalStateException("Course is full.");
-        }
         enrolledCount++;
     }
 
     public void decreaseEnrollment() {
-        if (enrolledCount > 0) {
-            enrolledCount--;
-        }
+        enrolledCount--;
     }
+
+    public void open() {
+        if (status != CourseStatus.DRAFT) {
+            throw new IllegalStateException("Only draft course can be opened.");
+        }
+
+        this.status = CourseStatus.OPEN;
+    }
+
+    public void close() {
+        if (status != CourseStatus.OPEN) {
+            throw new IllegalStateException("Only open course can be closed.");
+        }
+
+        this.status = CourseStatus.CLOSED;
+    }
+
+    public static Course create(
+        Creator creator,
+        String title,
+        String description,
+        BigDecimal price,
+        Integer capacity,
+        LocalDate startDate,
+        LocalDate endDate
+    ) {
+        Course course = new Course();
+
+        course.creator = creator;
+        course.title = title;
+        course.description = description;
+        course.price = price;
+        course.capacity = capacity;
+        course.enrolledCount = 0;
+        course.status = CourseStatus.DRAFT;
+        course.startDate = startDate;
+        course.endDate = endDate;
+
+        return course;
+    }
+
 }
