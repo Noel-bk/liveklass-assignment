@@ -1,0 +1,14 @@
+package com.liveklass.assignment.repository;
+
+import com.liveklass.assignment.entity.Classmate;
+import com.liveklass.assignment.entity.Course;
+import com.liveklass.assignment.entity.Enrollment;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
+    List<Enrollment> findByClassmate(Classmate classmate);
+    Optional<Enrollment> findByCourseAndClassmate(Course course, Classmate classmate);
+}
