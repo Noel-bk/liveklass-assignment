@@ -22,10 +22,15 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
         """)
     Optional<Course> findByIdWithLock(Long id);
 
+    @EntityGraph(attributePaths = "creator")
     List<Course> findAllByOrderByCreatedAtDesc();
 
+    @EntityGraph(attributePaths = "creator")
     List<Course> findAllByStatusOrderByCreatedAtDesc(CourseStatus status);
 
     @EntityGraph(attributePaths = "creator")
     Optional<Course> findById(Long id);
+
+    @EntityGraph(attributePaths = "creator")
+    Optional<Course> findByIdAndCreatorId(Long courseId, Long creatorId);
 }

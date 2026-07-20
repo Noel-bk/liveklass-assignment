@@ -17,36 +17,42 @@ import java.util.List;
 public class EnrollmentController {
     private final EnrollmentService enrollmentService;
 
-    @Operation(summary = "수강 신청")
+    @Operation(summary = "수강 신청", description = "수강생이 강의를 신청 합니다")
     @PostMapping("/courses/{courseId}/enrollments")
     public ResponseEntity<EnrollmentResponse> enroll(
         @PathVariable Long courseId,
-        @Valid @RequestBody CreateEnrollmentRequest request
+        @RequestHeader("X-Classmate-Id") Long classmateId
     ) {
-        EnrollmentResponse response = enrollmentService.enroll(courseId, request);
+        EnrollmentResponse response = enrollmentService.enroll(courseId, classmateId);
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(response);
     }
 
-    @Operation(summary = "수강 확정")
+    @Operation(summary = "수강 확정", description = "해당 수강신청 강의에 대해 확정 처리합니다")
     @PatchMapping("/enrollments/{enrollmentId}/confirm")
-    public ResponseEntity<Void> confirm(@PathVariable Long enrollmentId) {
-        enrollmentService.confirm(enrollmentId);
+    public ResponseEntity<Void> confirm(
+        @PathVariable Long enrollmentId,
+        @RequestHeader("X-Classmate-Id") Long classmateId
+    ) {
+        enrollmentService.confirm(enrollmentId, classmateId);
 
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "수강 취소")
+    @Operation(summary = "수강 취소", description = "해당 수강 신청을 취소합니다")
     @PatchMapping("/enrollments/{enrollmentId}/cancel")
-    public ResponseEntity<Void> cancel(@PathVariable Long enrollmentId) {
-        enrollmentService.cancel(enrollmentId);
+    public ResponseEntity<Void> cancel(
+        @PathVariable Long enrollmentId,
+        @RequestHeader("X-Classmate-Id") Long classmateId
+    ) {
+        enrollmentService.cancel(enrollmentId, classmateId);
 
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "내 수강 신청 목록 조회")
+    @Operation(summary = "내 수강 신청 목록 조회", description = "내 수강 신청 목록을 조회합니다")
     @GetMapping("/enrollments")
     public ResponseEntity<List<EnrollmentResponse>> findMyEnrollments(
         @RequestHeader("X-Classmate-Id") Long classmateId

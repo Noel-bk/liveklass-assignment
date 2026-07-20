@@ -22,8 +22,8 @@ public class CourseService {
     private final CreatorRepository creatorRepository;
 
     @Transactional
-    public CourseResponse createCourse(CreateCourseRequest request) {
-        Creator creator = getCreator(request.creatorId());
+    public CourseResponse createCourse(Long creatorId, CreateCourseRequest request) {
+        Creator creator = getCreator(creatorId);
 
         Course course = Course.create(
             creator,
@@ -61,6 +61,13 @@ public class CourseService {
         return CourseResponse.from(course);
     }
 
+    @Transactional
+    public CourseResponse open(Long courseId, Long creatorId) {
+        Course course = getCourseEntity(courseId, creatorId);
+        course.open();
+        return CourseResponse.from(course);
+    }
+
     private Creator getCreator(Long creatorId) {
         return creatorRepository.findById(creatorId)
             .orElseThrow(() -> new CreatorNotFoundException(creatorId));
@@ -70,4 +77,10 @@ public class CourseService {
         return courseRepository.findById(courseId)
             .orElseThrow(() -> new CourseNotFoundException(courseId));
     }
+
+    private Course getCourseEntity(Long courseId, Long creatorId) {
+        return courseRepository.findByIdAndCreatorId(courseId, creatorId)
+            .orElseThrow(() -> new CourseNotFoundException(courseId));
+    }
+
 }

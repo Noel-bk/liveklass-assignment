@@ -1,7 +1,6 @@
 package com.liveklass.assignment.service;
 
 import com.liveklass.assignment.common.exception.*;
-import com.liveklass.assignment.dto.CreateEnrollmentRequest;
 import com.liveklass.assignment.dto.EnrollmentResponse;
 import com.liveklass.assignment.entity.Classmate;
 import com.liveklass.assignment.entity.Course;
@@ -10,7 +9,6 @@ import com.liveklass.assignment.repository.ClassmateRepository;
 import com.liveklass.assignment.repository.CourseRepository;
 import com.liveklass.assignment.repository.EnrollmentRepository;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +22,9 @@ public class EnrollmentService {
     private final ClassmateRepository classmateRepository;
 
     @Transactional
-    public EnrollmentResponse enroll(Long courseId, CreateEnrollmentRequest request) {
+    public EnrollmentResponse enroll(Long courseId, Long classmateId) {
         Course course = getCourse(courseId);
-        Classmate classmate = getClassmate(request.classmateId());
+        Classmate classmate = getClassmate(classmateId);
 
         validateCourse(course);
         validateDuplicationEnrollment(course, classmate);
@@ -41,17 +39,15 @@ public class EnrollmentService {
     }
 
     @Transactional
-    public void confirm(Long enrollmentId) {
-        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
-            .orElseThrow(() -> new EnrollmentNotFoundException(enrollmentId));
+    public void confirm(Long enrollmentId, Long classmateId) {
+        Enrollment enrollment = getEnrollment(enrollmentId, classmateId);
 
         enrollment.confirm();
     }
 
     @Transactional
-    public void cancel(Long enrollmentId) {
-        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
-            .orElseThrow(() -> new EnrollmentNotFoundException(enrollmentId));
+    public void cancel(Long enrollmentId, Long classmateId) {
+        Enrollment enrollment = getEnrollment(enrollmentId, classmateId);
 
         enrollment.cancel();
 
@@ -71,7 +67,7 @@ public class EnrollmentService {
             .orElseThrow(() -> new CourseNotFoundException(courseId));
     }
 
-    private @NonNull Classmate getClassmate(Long classmateId) {
+    private Classmate getClassmate(Long classmateId) {
         return classmateRepository.findById(classmateId)
             .orElseThrow(() -> new ClassmateNotFoundException(classmateId));
     }
@@ -91,4 +87,11 @@ public class EnrollmentService {
                 throw new DuplicateEnrollmentException(course.getId(), classmate.getId());
             });
     }
+
+    private Enrollment getEnrollment(Long enrollmentId, Long classmateId) {
+        return enrollmentRepository
+            .findByIdAndClassmateId(enrollmentId, classmateId)
+            .orElseThrow(() -> new EnrollmentNotFoundException(enrollmentId));
+    }
 }
+

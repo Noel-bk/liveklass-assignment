@@ -18,18 +18,28 @@ import java.util.List;
 public class CourseController {
     private final CourseService courseService;
 
-    @Operation(summary = "강의 등록")
+    @Operation(summary = "강의 등록", description = "강의를 등록합니다")
     @PostMapping("/courses")
     public ResponseEntity<CourseResponse> createCourse(
+        @RequestHeader("X-Creator-Id") Long creatorId,
         @Valid @RequestBody CreateCourseRequest request
     ) {
-        CourseResponse response = courseService.createCourse(request);
+        CourseResponse response = courseService.createCourse(creatorId, request);
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(response);
     }
 
-    @Operation(summary = "강의 목록 조회")
+    @Operation(summary = "강의 개설", description = "해당 강의를 개설합니다")
+    @PatchMapping("/courses/{courseId}/open")
+    public CourseResponse open(
+        @RequestHeader("X-Creator-Id") Long creatorId,
+        @PathVariable Long courseId
+    ) {
+        return courseService.open(courseId, creatorId);
+    }
+
+    @Operation(summary = "강의 목록 조회", description = "강의 목록을 조회합니다")
     @GetMapping("/courses")
     public ResponseEntity<List<CourseResponse>> getCourses(
         @RequestParam(required = false) CourseStatus status
@@ -39,7 +49,7 @@ public class CourseController {
         );
     }
 
-    @Operation(summary = "강의 상세 조회")
+    @Operation(summary = "강의 상세 조회", description = "해당 강의를 조회합니다")
     @GetMapping("/courses/{courseId}")
     public ResponseEntity<CourseResponse> getCourse(
         @PathVariable Long courseId

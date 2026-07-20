@@ -9,9 +9,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record CreateCourseRequest(
-    @NotNull
-    Long creatorId,
-
     @NotBlank
     @Size(max = 100)
     String title,
