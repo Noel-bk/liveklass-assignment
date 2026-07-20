@@ -1,6 +1,7 @@
 package com.liveklass.assignment.service;
 
 import com.liveklass.assignment.common.exception.*;
+import com.liveklass.assignment.dto.CourseEnrollmentResponse;
 import com.liveklass.assignment.dto.EnrollmentResponse;
 import com.liveklass.assignment.entity.Classmate;
 import com.liveklass.assignment.entity.Course;
@@ -9,6 +10,8 @@ import com.liveklass.assignment.repository.ClassmateRepository;
 import com.liveklass.assignment.repository.CourseRepository;
 import com.liveklass.assignment.repository.EnrollmentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,10 +58,26 @@ public class EnrollmentService {
     }
 
     @Transactional(readOnly = true)
-    public List<EnrollmentResponse> findMyEnrollments(Long classmateId) {
-        return enrollmentRepository.findAllByClassmateIdOrderByCreatedAtDesc(classmateId)
+    public Page<EnrollmentResponse> getMyEnrollments(
+        Long classmateId,
+        Pageable pageable
+    ) {
+        return enrollmentRepository
+            .findAllByClassmateId(classmateId, pageable)
+            .map(EnrollmentResponse::from);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CourseEnrollmentResponse> getCourseEnrollments(
+        Long creatorId,
+        Long courseId
+    ) {
+        validateCourseOwner(courseId, creatorId);
+
+        return enrollmentRepository
+            .findAllByCourseIdOrderByCreatedAtAsc(courseId)
             .stream()
-            .map(EnrollmentResponse::from)
+            .map(CourseEnrollmentResponse::from)
             .toList();
     }
 
@@ -92,6 +111,11 @@ public class EnrollmentService {
         return enrollmentRepository
             .findByIdAndClassmateId(enrollmentId, classmateId)
             .orElseThrow(() -> new EnrollmentNotFoundException(enrollmentId));
+    }
+
+    private void validateCourseOwner(Long courseId, Long creatorId) {
+        courseRepository.findByIdAndCreatorId(courseId, creatorId)
+            .orElseThrow(() -> new CourseNotFoundException(courseId));
     }
 }
 

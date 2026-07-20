@@ -1,11 +1,14 @@
 package com.liveklass.assignment.controller;
 
-import com.liveklass.assignment.dto.CreateEnrollmentRequest;
+import com.liveklass.assignment.dto.CourseEnrollmentResponse;
 import com.liveklass.assignment.dto.EnrollmentResponse;
 import com.liveklass.assignment.service.EnrollmentService;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +31,17 @@ public class EnrollmentController {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(response);
+    }
+
+    @Operation(summary = "강의별 수강생 조회", description = "강의별 수강생 목록을 조회합니다")
+    @GetMapping("/courses/{courseId}/enrollments")
+    public ResponseEntity<List<CourseEnrollmentResponse>> getEnrollments(
+        @RequestHeader("X-Creator-Id") Long creatorId,
+        @PathVariable Long courseId
+    ) {
+        return ResponseEntity.ok(
+            enrollmentService.getCourseEnrollments(creatorId, courseId)
+        );
     }
 
     @Operation(summary = "수강 확정", description = "해당 수강신청 강의에 대해 확정 처리합니다")
@@ -54,12 +68,17 @@ public class EnrollmentController {
 
     @Operation(summary = "내 수강 신청 목록 조회", description = "내 수강 신청 목록을 조회합니다")
     @GetMapping("/enrollments")
-    public ResponseEntity<List<EnrollmentResponse>> findMyEnrollments(
-        @RequestHeader("X-Classmate-Id") Long classmateId
+    public Page<EnrollmentResponse> getMyEnrollments(
+        @RequestHeader("X-Classmate-Id") Long classmateId,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size
     ) {
-        return ResponseEntity.ok(
-            enrollmentService.findMyEnrollments(classmateId)
+        Pageable pageable = PageRequest.of(
+            page,
+            size,
+            Sort.by(Sort.Direction.DESC, "createdAt")
         );
+        return enrollmentService.getMyEnrollments(classmateId, pageable);
     }
 
 }

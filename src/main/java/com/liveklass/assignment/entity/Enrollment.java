@@ -1,5 +1,6 @@
 package com.liveklass.assignment.entity;
 
+import com.liveklass.assignment.common.exception.CancellationPeriodExpiredException;
 import com.liveklass.assignment.common.exception.InvalidEnrollmentStatusException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -29,6 +30,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 public class Enrollment {
+
+    private static final long CANCELLATION_PERIOD_DAYS = 7;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -71,6 +75,10 @@ public class Enrollment {
     public void cancel() {
         if (status != EnrollmentStatus.CONFIRMED) {
             throw new InvalidEnrollmentStatusException(id, status);
+        }
+
+        if (confirmedAt.plusDays(CANCELLATION_PERIOD_DAYS).isBefore(LocalDateTime.now())) {
+            throw new CancellationPeriodExpiredException(id);
         }
 
         status = EnrollmentStatus.CANCELLED;
