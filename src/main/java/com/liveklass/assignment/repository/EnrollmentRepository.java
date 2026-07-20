@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
-    List<Enrollment> findByClassmate(Classmate classmate);
-
     @EntityGraph(attributePaths = "course")
     Page<Enrollment> findAllByClassmateId(
         Long classmateId,

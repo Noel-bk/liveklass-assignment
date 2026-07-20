@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CourseRepository extends JpaRepository<Course, Long> {
-    List<Course> findByStatus(CourseStatus status);
-
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
         SELECT c

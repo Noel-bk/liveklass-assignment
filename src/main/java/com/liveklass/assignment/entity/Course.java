@@ -1,5 +1,6 @@
 package com.liveklass.assignment.entity;
 
+import com.liveklass.assignment.common.exception.InvalidCoursePeriodException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -106,6 +107,8 @@ public class Course {
         LocalDate startDate,
         LocalDate endDate
     ) {
+        validateCoursePeriod(startDate, endDate);
+
         Course course = new Course();
 
         course.creator = creator;
@@ -121,4 +124,12 @@ public class Course {
         return course;
     }
 
+    private static void validateCoursePeriod(
+        LocalDate startDate,
+        LocalDate endDate
+    ) {
+        if (endDate.isBefore(startDate)) {
+            throw new InvalidCoursePeriodException(startDate, endDate);
+        }
+    }
 }
