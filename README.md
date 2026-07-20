@@ -208,21 +208,6 @@ ex)
 
 ---
 
-### 동시성 고려
-
-`EnrollmentConcurrencyTest`를 통해 하나의 강의에 여러 사용자가 동시에 수강 신청하는 상황을 검증하였습니다.
-
-```
-- 정원(capacity): 3명
-- 동시 요청: 10건
-- 기대 결과
-    - 성공: 3건
-    - 실패(CourseFullException): 7건
-    - 최종 Enrollment 수: 3건
-```
-
----
-
 ### API 설계
 
 조회 API는 누구나 사용할 수 있도록 공개하였으며,
@@ -235,10 +220,34 @@ ex)
 
 ## 테스트 실행 방법
 
-### 단위 테스트
+### 전체 테스트 실행
 
 ```bash
 ./gradlew test
+```
+
+주요 테스트 목록
+- CourseServiceTest: 강의 생성 기능 검증
+- EnrollmentServiceTest: 수강 신청 Lifecycle 검증
+- EnrollmentConcurrencyTest: 동시성 환경에서 정원 초과 방지 검증
+
+**EnrollmentConcurrencyTest**
+
+테스트 시나리오:
+```
+정원(capacity)이 3명인 강의를 생성
+
+10명의 수강생이 동시에 수강 신청 요청
+
+최종 수강 인원은 최대 정원을 초과하지 않는지 검증
+```
+
+검증 항목:
+```
+Course.enrolledCount가 capacity를 초과하지 않음
+Enrollment 데이터 개수가 capacity 이하
+성공한 신청 수는 3건
+실패한 신청은 CourseFullException 발생
 ```
 
 ### Swagger
