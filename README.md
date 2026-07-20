@@ -48,9 +48,7 @@ docker compose up -d
 
 ### 3. Swagger
 
-```
-http://localhost:8080/swagger-ui/index.html
-```
+[Swagger UI](http://localhost:8080/swagger-ui/index.html)
 
 ### 4. 초기 데이터
 
@@ -61,7 +59,7 @@ http://localhost:8080/swagger-ui/index.html
 
 ---
 
-## API 목록 및 예시 // TODO: request/response
+## API 목록 및 예시 (Swagger 참조)
 
 ### Course
 
