@@ -13,7 +13,10 @@ import org.springframework.context.annotation.Configuration;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+// Development purpose only.
 @Configuration
 @RequiredArgsConstructor
 public class DataInitializer {
@@ -29,17 +32,22 @@ public class DataInitializer {
                 return;
             }
 
-            Creator creator = Creator.create("John Creator");
+            List<Creator> creators = new ArrayList<>();
+            for (int i = 0; i < 10; i++) {
+                Creator creator = creatorRepository.save(
+                    Creator.create("creator" + i)
+                );
 
-            creatorRepository.save(creator);
+                creators.add(creator);
 
-            Classmate classmate = Classmate.create("Alice");
-
-            classmateRepository.save(classmate);
+                classmateRepository.save(
+                    Classmate.create("classmate" + i)
+                );
+            }
 
             Course course = Course.create(
-                creator,
-                "YOLO",
+                creators.get(0),
+                "Sample Course #1",
                 "Description goes here..",
                 BigDecimal.valueOf(100_000),
                 20,

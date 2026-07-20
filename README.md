@@ -32,6 +32,12 @@
 docker compose up -d
 ```
 
+초기 DB 생성이 안되는 경우
+```bash
+docker compose down -v
+docker compose up -d
+```
+
 ### 2. 애플리케이션 실행
 
 ```bash
@@ -45,6 +51,13 @@ docker compose up -d
 ```
 http://localhost:8080/swagger-ui/index.html
 ```
+
+### 4. 초기 데이터
+
+애플리케이션 실행 시 테스트 편의를 위해 초기 데이터가 최초 1회 생성됩니다.
+- Creator 10명
+- Classmate 10명
+- Sample Course 1개
 
 ---
 
